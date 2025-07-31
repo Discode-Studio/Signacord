@@ -1,1 +1,286 @@
-Welcome to Signacord!
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signacord</title>
+    <meta property="og:title" content="Radio Player">
+    <meta property="og:description" content="Signabroam Radio Player is a free radio player without any ads! Note: if you got audio ads then it's from the station and not from the website.">
+    <meta property="og:image" content="https://avatars.githubusercontent.com/u/189441456?s=200&v=4">
+    <meta property="og:type" content="website">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #23272a;
+            color: #fff;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        #bg-blur {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            background: #23272a;
+            background-size: cover;
+            background-position: center;
+            filter: blur(32px) brightness(0.6) saturate(1.2);
+            pointer-events: none;
+            transition: background-image 0.7s cubic-bezier(.4,0,.2,1);
+        }
+        header {
+            margin-top: 40px;
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+        .logo h1 {
+            margin: 0;
+            font-size: 2.4em;
+            letter-spacing: 2px;
+        }
+        .logo h4 {
+            margin: 0;
+            font-weight: 400;
+            color: #b9bbbe;
+            font-size: 1.1em;
+        }
+        nav {
+            margin: 24px 0 0 0;
+        }
+        nav .button {
+            background: linear-gradient(90deg, #5865f2 60%, #4752c4 100%);
+            color: #fff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 0 6px 8px 6px;
+            box-shadow: 0 2px 12px rgba(88,101,242,0.12);
+            transition: background 0.2s, transform 0.15s;
+        }
+        nav .button:hover {
+            background: linear-gradient(90deg, #4752c4 60%, #5865f2 100%);
+            transform: translateY(-2px) scale(1.04);
+        }
+        .container {
+            background: rgba(44,47,51,0.97);
+            padding: 28px 36px;
+            border-radius: 12px;
+            margin-top: 36px;
+            min-width: 320px;
+            max-width: 600px;
+            width: 90vw;
+            text-align: center;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+            z-index: 2;
+            position: relative;
+        }
+        .card {
+            background: rgba(35,39,42,0.99);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.32);
+            margin: 30px auto 0 auto;
+            padding: 28px 18px 18px 18px;
+            max-width: 480px;
+            text-align: center;
+            position: relative;
+            transition: background 0.3s;
+        }
+        select {
+            width: 90%;
+            padding: 8px;
+            border-radius: 6px;
+            border: none;
+            background: #23272a;
+            color: #fff;
+            margin: 10px 0 18px 0;
+            font-size: 1em;
+        }
+        select:focus {
+            outline: 2px solid #5865f2;
+        }
+        input[type="range"] {
+            width: 70%;
+            margin: 8px 0;
+            accent-color: #5865f2;
+        }
+        input[type="checkbox"] {
+            accent-color: #5865f2;
+            margin-left: 10px;
+        }
+        label {
+            color: #b9bbbe;
+            font-size: 1em;
+        }
+        #nowPlaying {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100vw;
+            background: #18191c;
+            color: #fff;
+            padding: 12px 0 16px 0;
+            text-align: center;
+            border-radius: 15px 15px 0 0;
+            z-index: 10;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.18);
+        }
+        #stationThumb {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: 8px;
+            display: none;
+            vertical-align: middle;
+            margin-right: 10px;
+            background: #23272a;
+        }
+        #stationName, #currentTrack {
+            font-size: 1.1em;
+            color: #fff;
+        }
+        audio#audioPlayer {
+            width: 100%;
+            margin-top: 18px;
+            border-radius: 6px;
+            background: #23272a;
+            display: none;
+        }
+        @media (max-width: 700px) {
+            .container {
+                min-width: 0;
+                max-width: 98vw;
+                padding: 18px 4vw;
+            }
+            .card {
+                min-width: 0;
+                max-width: 98vw;
+                padding: 18px 2vw;
+            }
+            #stationThumb {
+                width: 44px;
+                height: 44px;
+            }
+            select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="bg-blur"></div>
+    <header>
+        <div class="logo">
+            <h1>Signacord</h1>
+            <h4>The Signabroam Radio Player Into Discord!</h4>
+        </div>
+    </header>
+    <section class="container">
+        <h3>Radio player</h3>
+        <section class="card">
+            <div>
+                <label for="audioSelect">Select a station:</label>
+                <select id="audioSelect">
+                    <option value="" disabled selected>Choose a station</option>
+                    <optgroup label="Radio over the world.">
+                        <option value="https://cast.iplayradio.net/listen/powermixfm/stream" tmb="https://oetpai.fra1.cdn.digitaloceanspaces.com/new_images/onestop_14602115.jpg">PowerMixFM (EN)</option>
+                        <option value="https://audio-edge-ey5nr.ams.s.radiomast.io/73055724-1141-41e2-a69b-24a6ca96c8e7" tmb="https://ih1.redbubble.net/image.918151512.7405/st,small,507x507-pad,600x600,f8f8f8.jpg">Happy Hardcore (UK/JP)</option>
+                        <option value="https://technolocos.net/listen/technolocos/radio.mp3" tmb="https://i1.sndcdn.com/artworks-000127816766-mwij58-t500x500.jpg">Technolocos (EN)</option>
+                    </optgroup>
+                    <optgroup label="Other"></optgroup>
+                        <option value="http://stream.priyom.org:8000/buzzer" tmb="https://upload.wikimedia.org/wikipedia/commons/8/83/Uvb76antenna.jpg">UZB-76</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div>
+                <label for="volumeControl">Volume</label>
+                <input type="range" id="volumeControl" min="0" max="1" step="0.001" value="1">
+                <input type="checkbox" id="muteControl"> <label for="muteControl">Mute</label>
+            </div>
+            <audio id="audioPlayer" controls style="width:100%;margin-top:16px;border-radius:6px;background:#23272a;display:none"></audio>
+        </section>
+    </section>
+    <div id="nowPlaying">
+        <img id="stationThumb" src="" alt="Station thumbnail">
+        <span id="stationName">Station: None</span> <br /><br>
+        <span id="currentTrack">Currently: None</span>
+    </div>
+    <script>
+        // Dynamic background blur based on station thumbnail
+        function setDynamicBg(url) {
+            const fallback = 'https://cdn-icons-png.flaticon.com/512/727/727240.png';
+            document.getElementById('bg-blur').style.backgroundImage = `url('${url || fallback}')`;
+        }
+
+        // Elements
+        const audioSelect = document.getElementById('audioSelect');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const volumeControl = document.getElementById('volumeControl');
+        const muteControl = document.getElementById('muteControl');
+        const stationThumb = document.getElementById('stationThumb');
+        const stationName = document.getElementById('stationName');
+        const currentTrack = document.getElementById('currentTrack');
+
+        // Play selected audio
+        audioSelect.addEventListener('change', function() {
+            const selected = audioSelect.options[audioSelect.selectedIndex];
+            const url = selected.value;
+            const name = selected.textContent;
+            const tmb = selected.getAttribute('tmb');
+            if (url) {
+                audioPlayer.src = url;
+                audioPlayer.style.display = '';
+                audioPlayer.play().catch(()=>{});
+                stationName.textContent = "Station: " + name;
+                currentTrack.textContent = "Currently: Streaming";
+                if (tmb) {
+                    stationThumb.src = tmb;
+                    stationThumb.style.display = '';
+                    setDynamicBg(tmb);
+                } else {
+                    stationThumb.src = '';
+                    stationThumb.style.display = 'none';
+                    setDynamicBg('');
+                }
+            }
+        });
+
+        // Volume control
+        volumeControl.addEventListener('input', function() {
+            audioPlayer.volume = parseFloat(this.value);
+        });
+
+        // Mute control
+        muteControl.addEventListener('change', function() {
+            audioPlayer.muted = this.checked;
+        });
+
+        // Show default background
+        setDynamicBg('');
+
+        // Show default audio player state
+        audioPlayer.addEventListener('playing', function() {
+            currentTrack.textContent = "Currently: Streaming";
+        });
+        audioPlayer.addEventListener('pause', function() {
+            currentTrack.textContent = "Currently: Paused";
+        });
+        audioPlayer.addEventListener('ended', function() {
+            currentTrack.textContent = "Currently: Ended";
+        });
+        audioPlayer.addEventListener('error', function() {
+            currentTrack.textContent = "Currently: Error loading stream";
+        });
+    </script>
+</body>
+</html>
