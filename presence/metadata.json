@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schemas.premid.app/metadata/1.0",
+  "author": {
+    "name": "Signacord",
+    "id": "189441456"
+  },
+  "contributors": [],
+  "service": "Signacord",
+  "altnames": ["Signabroam"],
+  "description": {
+    "en": "Signacord Radio Player - Display what you're listening to on Discord"
+  },
+  "url": "dc.signabroam.ovh",
+  "version": "1.0.0",
+  "logo": "https://avatars.githubusercontent.com/u/189441456?s=200&v=4",
+  "thumbnail": "https://avatars.githubusercontent.com/u/189441456?s=200&v=4",
+  "color": "#2C3E50",
+  "tags": ["music", "radio", "audio"],
+  "category": "music",
+  "iframe": false
+}
